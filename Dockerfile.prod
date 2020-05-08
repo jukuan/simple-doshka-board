@@ -1,0 +1,41 @@
+# build environment
+FROM node:alpine as builder
+
+RUN apk update && apk upgrade
+RUN apk add nodejs
+
+# Create app directory
+RUN mkdir /app
+RUN mkdir /app/front
+WORKDIR /app/front
+
+# Install app dependencies
+COPY package*.json ./
+
+ENV PATH /app/front/node_modules/.bin:$PATH
+
+RUN npm install --silent
+
+
+# If you are building your code for production
+RUN npm ci --only=production --silent
+RUN npm install react-scripts@3.4.1 -g --silent
+
+# Bundle app source
+COPY . .
+
+RUN npm run build
+
+
+
+# production environment
+FROM nginx:stable-alpine
+
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY nginx/default.conf /etc/nginx/conf.d/default
+COPY --from=builder /app/front/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
