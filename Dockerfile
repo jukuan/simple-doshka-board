@@ -1,4 +1,4 @@
-#
+# build environment
 FROM node:alpine as builder
 
 RUN apk update && apk upgrade
@@ -15,10 +15,11 @@ COPY package*.json ./
 ENV PATH /app/front/node_modules/.bin:$PATH
 
 RUN npm install --silent
-RUN npm install -g react-scripts --silent
-
+RUN npm install react-scripts@3.4.1 -g --silent
 
 # Bundle app source
 COPY . .
+
+EXPOSE 3000
 
 CMD ["npm", "start"]

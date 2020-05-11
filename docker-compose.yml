@@ -11,6 +11,8 @@ services:
     volumes:
       - '.:/app/front'
       - '/app/front/node_modules'
+    stdin_open: true
+    tty: true
     ports:
       - "3001:3000"
     environment:
