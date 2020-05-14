@@ -1,6 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import KanbanColumn from './KanbanColumn';
+import Reducer from './../reducer'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import { changeCardColumn } from './../actions'
+
+const store = createStore(Reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 
 /*
  * Projects to be displayed on Kanban Board
@@ -79,6 +84,8 @@ export default class KanbanBoard extends React.Component {
         const updatedProjects = this.state.projects.slice(0);
         updatedProjects.find((projectObject) => {return projectObject.name === project.name;}).project_stage = this.state.draggedOverCol;
         this.setState({ projects: updatedProjects });
+
+        changeCardColumn(project.name, this.state.draggedOverCol);
     }
 
     render() {
@@ -87,7 +94,7 @@ export default class KanbanBoard extends React.Component {
         }
 
         return  (
-            <div>
+            <Provider store={store}>
                 {this.columns.map((column) => {
                     return (
                         <KanbanColumn
@@ -100,7 +107,7 @@ export default class KanbanBoard extends React.Component {
                         />
                     );
                 })}
-            </div>
+            </Provider>
         );
     }
 }
